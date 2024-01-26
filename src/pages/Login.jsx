@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import React, { useState, useEffect } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,6 +15,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
 import {
     Form,
     FormControl,
@@ -52,15 +54,6 @@ const formSchema = z.object({
 // React 컴포넌트
 function Login() {
     const navigate = useNavigate();
-
-    const { currentUser } = useAuth();
-
-    useEffect(() => {
-        // 로그인 되어있으면 홈으로 이동
-        if (currentUser) {
-            navigate("/home");
-        }
-    }, [currentUser, navigate]);
 
     const form = useForm({
         resolver: zodResolver(formSchema),
