@@ -178,11 +178,11 @@ function Signup() {
                 로그인하기
             </Link>
 
-            <div className="mt-4">
+            {/* <div className="mt-4">
                 <Button onClick={googleSignUp} style={{ width: "100%" }}>
                     구글 회원가입
                 </Button>
-            </div>
+            </div> */}
 
             {isAlertOpen && (
                 <AlertDialog open={isAlertOpen}>
