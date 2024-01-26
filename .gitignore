@@ -25,4 +25,4 @@ dist-ssr
 
 
 
-firebase.js
+src/firebase.js
