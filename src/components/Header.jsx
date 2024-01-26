@@ -105,8 +105,6 @@ function Header() {
                             <MenubarItem>건강</MenubarItem>
                             <MenubarSeparator />
                             <MenubarItem>스포츠</MenubarItem>
-                            <MenubarSeparator />
-                            <MenubarItem>취미</MenubarItem>
                         </MenubarContent>
                     </MenubarMenu>
                 </Menubar>
