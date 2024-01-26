@@ -33,7 +33,7 @@ function Header() {
                         placeholder="검색할 상품 이름을 입력하세요."
                         className="w-80"
                     />
-                    <Button>검색</Button>
+                    <Button className="ml-1">검색</Button>
                 </div>
 
                 <div className="flex flex-row h-full">
