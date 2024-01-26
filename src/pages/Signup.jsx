@@ -30,6 +30,7 @@ import { Link } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 // import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
@@ -94,7 +95,18 @@ function Signup() {
             });
     }
 
-    // 양식 렌더링
+    const googleSignUp = () => {
+        const provider = new GoogleAuthProvider(); // provider를 구글로 설정
+        signInWithPopup(auth, provider) // popup을 이용한 signup
+            .then((data) => {
+                // setUserData(data.user); // user data 설정
+                console.log(data); // console로 들어온 데이터 표시
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
     return (
         <div className="flex flex-col justify-center items-center w-screen h-screen ">
             <Form {...form}>
@@ -167,7 +179,9 @@ function Signup() {
             </Link>
 
             <div className="mt-4">
-                <Button style={{ width: "100%" }}>구글 회원가입</Button>
+                <Button onClick={googleSignUp} style={{ width: "100%" }}>
+                    구글 회원가입
+                </Button>
             </div>
 
             {isAlertOpen && (
