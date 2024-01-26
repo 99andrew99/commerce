@@ -74,7 +74,7 @@ function Login() {
                 // 사용자 생성 성공
                 const user = userCredential.user;
                 console.log("로그인 성공", userCredential);
-
+                navigate("/home");
                 // Firestore에 닉네임과 이메일 저장
                 // setDoc(doc(db, "users", user.uid), {
                 //     nickname: nickname,
@@ -104,7 +104,7 @@ function Login() {
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-8  w-1/3 h-2/5 ml-auto mr-auto"
+                    className="space-y-8  w-1/3 h-2/6 ml-auto mr-auto"
                 >
                     <FormField
                         control={form.control}
