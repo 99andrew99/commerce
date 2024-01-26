@@ -96,11 +96,11 @@ function Signup() {
 
     // 양식 렌더링
     return (
-        <div className="flex flex-col justify-center items-center w-screen h-screen bg-red-400">
+        <div className="flex flex-col justify-center items-center w-screen h-screen ">
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-8 bg-blue-400 w-1/3 h-1/2 ml-auto mr-auto"
+                    className="space-y-8  w-1/3 h-2/5 ml-auto mr-auto"
                 >
                     <FormField
                         control={form.control}
@@ -167,7 +167,7 @@ function Signup() {
             </Link>
 
             <div className="mt-4">
-                <div>SNS 회원가입</div>
+                <Button style={{ width: "100%" }}>구글 회원가입</Button>
             </div>
 
             {isAlertOpen && (
