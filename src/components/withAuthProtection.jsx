@@ -16,18 +16,19 @@ const withAuthProtection = (WrappedComponent) => {
                 } else {
                     setIsLoading(false);
                 }
-            }, 1000);
+            }, 600);
             return () => clearTimeout(timer);
         }, [currentUser, navigate]);
 
-        if (isLoading) {
-            return (
-                <div className="fixed top-0 bg-black w-screen h-screen flex flex-col justify-center items-center">
-                    <LoadingSpinner className={"bg-white z-20"} />
-                    <div className="text-white mt-4">Loading...</div>
-                </div>
-            ); // 로딩 인디케이터 표시
-        }
+        // 사용자 경험에 매우 안좋아서 삭제.
+        // if (isLoading) {
+        //     return (
+        //         <div className="fixed top-0 bg-black w-screen h-screen flex flex-col justify-center items-center">
+        //             <LoadingSpinner className={"bg-white z-20"} />
+        //             <div className="text-white mt-4">Loading...</div>
+        //         </div>
+        //     ); // 로딩 인디케이터 표시
+        // }
 
         return <WrappedComponent {...props} />;
     };
