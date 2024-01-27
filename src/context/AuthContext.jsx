@@ -10,6 +10,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState();
+    console.log("현재 유저는: ", currentUser);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {

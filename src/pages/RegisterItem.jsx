@@ -36,8 +36,8 @@ function RegisterItem() {
         defaultValues: {
             category: "",
             name: "",
-            cost: 0,
-            stock: 0,
+            cost: "",
+            stock: "",
             description: "",
         },
     });
