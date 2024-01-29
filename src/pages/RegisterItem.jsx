@@ -23,6 +23,13 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "@/firebase";
+import { useAuth } from "@/context/AuthContext";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
+
 const formSchema = z.object({
     name: z.string().min(1),
     cost: z.number(),
@@ -31,6 +38,10 @@ const formSchema = z.object({
 });
 
 function RegisterItem() {
+    const navigate = useNavigate();
+    const { currentUser } = useAuth();
+    console.log("레지스터 유저: ", currentUser);
+
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -42,12 +53,14 @@ function RegisterItem() {
         },
     });
 
-    useEffect(() => {
-        form.register("category");
-        form.register("file");
-    }, [form.register]);
+    // useEffect(() => {
+    //     form.register("category");
+    //     form.register("file");
+    // }, [form.register]);
 
     const [selectedFiles, setSelectedFiles] = useState();
+    const [fileUrl, setFileUrl] = useState([]);
+    const [categoryValue, setCategoryValue] = useState("식품");
 
     const handleFileChange = (event) => {
         setSelectedFiles(event.target.files);
@@ -55,12 +68,65 @@ function RegisterItem() {
     };
 
     const handleCategoryChange = (value) => {
-        form.setValue("category", value);
+        // form.setValue("category", value);
+        setCategoryValue(value);
     };
 
-    const onSubmit = (data) => {
-        console.log(data);
-        console.log(selectedFiles);
+    const currentTimeFunc = () => {
+        const currentTimestamp = Date.now(); // 현재 타임스탬프를 얻음
+        const currentDate = new Date(currentTimestamp); // 타임스탬프를 Date 객체로 변환
+
+        // 각 부분을 가져와서 두 자리로 포맷팅
+        const yyyy = currentDate.getFullYear();
+        const MM = String(currentDate.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 1을 더하고 두 자리로 포맷팅
+        const dd = String(currentDate.getDate()).padStart(2, "0");
+        const HH = String(currentDate.getHours()).padStart(2, "0");
+        const mm = String(currentDate.getMinutes()).padStart(2, "0");
+        const ss = String(currentDate.getSeconds()).padStart(2, "0");
+
+        // 포맷된 문자열 반환
+        const formattedDateTime = `${yyyy}-${MM}-${dd}-${HH}:${mm}:${ss}`;
+        return formattedDateTime;
+    };
+
+    const onSubmit = async (data) => {
+        // console.log("데이터는:", data);
+        // console.log(selectedFiles);
+        let tempArr = [];
+        let currentTime = currentTimeFunc();
+        // console.log("현재 시간: ", currentTime);
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+            const imageRef = ref(
+                storage,
+                `images/${selectedFiles[i].name}_${currentTime}`
+            );
+            // console.log("imageRef : ", imageRef);
+            await uploadBytes(imageRef, selectedFiles[i]);
+
+            const downloadUrl = await getDownloadURL(imageRef);
+            // console.log("다운로드URL:", downloadUrl);
+            tempArr.push(downloadUrl);
+        }
+
+        setFileUrl(tempArr);
+        // console.log("파일 url", fileUrl);
+
+        // for (let i = 0; i < fileUrl.length; i++) {
+        //     console.log(`${i + 1} 번째 파일 주소는: `, fileUrl[i]);
+        // }
+
+        setDoc(
+            doc(db, "sale", `${currentUser.uid}_${data.name}_${currentTime}`),
+            {
+                category: categoryValue,
+                name: data.name,
+                cost: data.cost,
+                stock: data.stock,
+                description: data.description,
+                file: fileUrl.join(","),
+            }
+        );
     };
 
     return (
