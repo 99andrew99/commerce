@@ -32,7 +32,12 @@ import { Link } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+    GoogleAuthProvider,
+    signInWithPopup,
+    browserLocalPersistence,
+    setPersistence,
+} from "firebase/auth";
 import { useAuth } from "@/context/AuthContext";
 // import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
@@ -69,21 +74,29 @@ function Login() {
 
         const { email, password } = values;
 
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // 사용자 생성 성공
-                const user = userCredential.user;
-                console.log("로그인 성공", userCredential);
-                navigate("/home");
-                // Firestore에 닉네임과 이메일 저장
-                // setDoc(doc(db, "users", user.uid), {
-                //     nickname: nickname,
-                // });
+        setPersistence(auth, browserLocalPersistence)
+            .then(() => {
+                console.log("실행은 됨");
 
-                // setIsAlertOpen(true);
+                return signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        // 사용자 생성 성공
+                        const user = userCredential.user;
+                        console.log("로그인 성공", userCredential);
+                        navigate("/home");
+                        // Firestore에 닉네임과 이메일 저장
+                        // setDoc(doc(db, "users", user.uid), {
+                        //     nickname: nickname,
+                        // });
+
+                        // setIsAlertOpen(true);
+                    })
+                    .catch((error) => {
+                        console.error("회원가입 실패", error);
+                    });
             })
             .catch((error) => {
-                console.error("회원가입 실패", error);
+                console.log("setpersistence 에러", error);
             });
     }
 

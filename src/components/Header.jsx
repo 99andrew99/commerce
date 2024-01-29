@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { auth } from "../firebase";
 import { getAuth, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 import {
     Menubar,
@@ -15,8 +16,18 @@ import {
 } from "@/components/ui/menubar";
 
 function Header() {
+    const navigate = useNavigate();
+
     const onLogOutClick = () => {
         signOut(auth);
+    };
+
+    const moveToHome = () => {
+        navigate("/home");
+    };
+
+    const moveToSale = () => {
+        navigate("/registeritem");
     };
 
     const { currentUser } = useAuth();
@@ -25,7 +36,10 @@ function Header() {
     return (
         <div className=" w-screen h-28 border-b border-black">
             <div className="flex flex-row w-full h-3/5 items-center place-content-between">
-                <div className="font-bold text-xl hover:text-neutral-600 cursor-pointer ml-4">
+                <div
+                    className="font-bold text-xl hover:text-neutral-600 cursor-pointer ml-4"
+                    onClick={moveToHome}
+                >
                     CHO-COMMERCE
                 </div>
                 <div className="flex flex-row">
@@ -36,7 +50,7 @@ function Header() {
                     <Button className="ml-1">검색</Button>
                 </div>
 
-                <div className="flex flex-row h-full">
+                <div className="flex flex-row h-full" onClick={moveToSale}>
                     <div className="flex flex-col justify-center items-center mr-6 cursor-pointer">
                         <img
                             src="/img/saleIcon.png"
@@ -91,8 +105,6 @@ function Header() {
                             <MenubarItem>건강</MenubarItem>
                             <MenubarSeparator />
                             <MenubarItem>스포츠</MenubarItem>
-                            <MenubarSeparator />
-                            <MenubarItem>취미</MenubarItem>
                         </MenubarContent>
                     </MenubarMenu>
                 </Menubar>
