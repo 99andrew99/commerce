@@ -4,8 +4,8 @@ export const LoadingSpinner = () => {
     return (
         <Watch
             visible={true}
-            height="80"
-            width="80"
+            height="50"
+            width="50"
             radius="48"
             color="white"
             ariaLabel="watch-loading"

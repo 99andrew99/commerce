@@ -30,6 +30,18 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { LoadingSpinner } from "@/components/ui/loading";
+
 const formSchema = z.object({
     name: z.string().min(1),
     cost: z.number(),
@@ -38,6 +50,8 @@ const formSchema = z.object({
 });
 
 function RegisterItem() {
+    const [isAlertOpen, setIsAlertOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { currentUser } = useAuth();
     console.log("레지스터 유저: ", currentUser);
@@ -57,6 +71,12 @@ function RegisterItem() {
     //     form.register("category");
     //     form.register("file");
     // }, [form.register]);
+
+    const handleConfirm = () => {
+        // alert 창 닫고 로그인 창 이동
+        setIsAlertOpen(false);
+        navigate(-1);
+    };
 
     const [selectedFiles, setSelectedFiles] = useState();
     const [fileUrl, setFileUrl] = useState([]);
@@ -92,6 +112,11 @@ function RegisterItem() {
     const onSubmit = async (data) => {
         // console.log("데이터는:", data);
         // console.log(selectedFiles);
+        if (selectedFiles == null) {
+            alert("사진을 등록해주세요.");
+            return;
+        }
+        setIsLoading(true);
         let tempArr = [];
         let currentTime = currentTimeFunc();
         // console.log("현재 시간: ", currentTime);
@@ -127,16 +152,16 @@ function RegisterItem() {
                 file: fileUrl.join(","),
             }
         );
+
+        setIsLoading(false);
+        setIsAlertOpen(true);
     };
 
     return (
-        <div className="w-screen h-screen bg-red-400 flex flex-row justify-start flex-col items-center">
+        <div className="w-screen h-screen flex flex-row justify-start flex-col items-center">
             <div>상품 등록</div>
             <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="bg-blue-400 w-1/3"
-                >
+                <form onSubmit={form.handleSubmit(onSubmit)} className=" w-1/3">
                     <FormField
                         control={form.control}
                         name="category"
@@ -304,6 +329,35 @@ function RegisterItem() {
                     </div>
                 </form>
             </Form>
+
+            {
+                isLoading && (
+                    <div className="fixed top-0 bg-black w-screen h-screen flex flex-col justify-center items-center">
+                        <LoadingSpinner className={"bg-white z-20"} />
+                        <div className="text-white mt-4">
+                            상품 등록중입니다...
+                        </div>
+                    </div>
+                ) // 로딩 인디케이터 표시
+            }
+
+            {isAlertOpen && (
+                <AlertDialog open={isAlertOpen}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>상품 등록 완료</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                상품 등록에 성공했습니다.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogAction onClick={handleConfirm}>
+                                확인
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            )}
         </div>
     );
 }
