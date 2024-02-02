@@ -26,7 +26,7 @@ import { useEffect, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
@@ -130,12 +130,12 @@ function RegisterItem() {
             await uploadBytes(imageRef, selectedFiles[i]);
 
             const downloadUrl = await getDownloadURL(imageRef);
-            // console.log("다운로드URL:", downloadUrl);
+            console.log("다운로드URL:", downloadUrl);
             tempArr.push(downloadUrl);
         }
 
         setFileUrl(tempArr);
-        // console.log("파일 url", fileUrl);
+        console.log("파일 url", tempArr);
 
         // for (let i = 0; i < fileUrl.length; i++) {
         //     console.log(`${i + 1} 번째 파일 주소는: `, fileUrl[i]);
@@ -149,7 +149,9 @@ function RegisterItem() {
                 cost: data.cost,
                 stock: data.stock,
                 description: data.description,
-                file: fileUrl.join(","),
+                file: tempArr.join(","),
+                uid: currentUser.uid,
+                createdAt: serverTimestamp(),
             }
         );
 
