@@ -22,7 +22,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route
-                    path="/home"
+                    path="/"
                     element={
                         <Layout>
                             <ProtectedHome />

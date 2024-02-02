@@ -74,7 +74,7 @@ function Login() {
                 // 사용자 생성 성공
                 const user = userCredential.user;
                 console.log("로그인 성공", userCredential);
-                navigate("/home");
+                navigate("/");
                 // Firestore에 닉네임과 이메일 저장
                 // setDoc(doc(db, "users", user.uid), {
                 //     nickname: nickname,
