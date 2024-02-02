@@ -4,7 +4,6 @@ import { useAuth } from "@/context/AuthContext";
 import { auth } from "../firebase";
 import { getAuth, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-
 import {
     Menubar,
     MenubarContent,
@@ -14,6 +13,7 @@ import {
     MenubarShortcut,
     MenubarTrigger,
 } from "@/components/ui/menubar";
+import { useState } from "react";
 
 function Header() {
     const navigate = useNavigate();
@@ -27,14 +27,16 @@ function Header() {
     };
 
     const moveToSale = () => {
-        navigate("/registeritem");
+        navigate("/sale");
     };
+
+    const [isOpen, setIsOpen] = useState(false);
 
     const { currentUser } = useAuth();
     console.log("홈페이지", currentUser);
 
     return (
-        <div className=" w-screen h-28 border-b border-black">
+        <div className=" w-screen border-b border-black h-28 lg:h-28">
             <div className="flex flex-row w-full h-3/5 items-center place-content-between">
                 <div
                     className="font-bold text-xl hover:text-neutral-600 cursor-pointer ml-4"
@@ -42,7 +44,25 @@ function Header() {
                 >
                     CHO-COMMERCE
                 </div>
-                <div className="flex flex-row">
+
+                <Button className="hover:bg-slate-400  lg:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </Button>
+                <div className="flex flex-row ">
                     <Input
                         placeholder="검색할 상품 이름을 입력하세요."
                         className="w-80"
