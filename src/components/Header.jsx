@@ -23,11 +23,15 @@ function Header() {
     };
 
     const moveToHome = () => {
-        navigate("/home");
+        navigate("/");
     };
 
     const moveToSale = () => {
-        navigate("/registeritem");
+        navigate("/sale");
+    };
+
+    const moveToCart = () => {
+        // navigate("/registeritem");
     };
 
     const { currentUser } = useAuth();
@@ -50,8 +54,11 @@ function Header() {
                     <Button className="ml-1">검색</Button>
                 </div>
 
-                <div className="flex flex-row h-full" onClick={moveToSale}>
-                    <div className="flex flex-col justify-center items-center mr-6 cursor-pointer">
+                <div className="flex flex-row h-full">
+                    <div
+                        className="flex flex-col justify-center items-center mr-6 cursor-pointer"
+                        onClick={moveToSale}
+                    >
                         <img
                             src="/img/saleIcon.png"
                             style={{ width: "40px", height: "40px" }}
@@ -65,7 +72,10 @@ function Header() {
                         />
                         <p className="text-xs">마이페이지</p>
                     </div>
-                    <div className="flex flex-col justify-center items-center mr-6 cursor-pointer">
+                    <div
+                        className="flex flex-col justify-center items-center mr-6 cursor-pointer"
+                        onClick={moveToCart}
+                    >
                         <img
                             src="/img/cartIcon.png"
                             style={{ width: "40px", height: "40px" }}
