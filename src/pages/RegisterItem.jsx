@@ -152,6 +152,7 @@ function RegisterItem() {
                 file: tempArr.join(","),
                 uid: currentUser.uid,
                 createdAt: serverTimestamp(),
+                id: `${currentUser.uid}_${data.name}_${currentTime}`,
             }
         );
 

@@ -2,7 +2,15 @@ import Saleitem from "@/components/Saleitem";
 import { db } from "@/firebase";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import {
+    collection,
+    query,
+    where,
+    getDocs,
+    orderBy,
+    doc,
+    getDoc,
+} from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -15,6 +23,23 @@ function Salemain() {
     const moveToRegisterItem = () => {
         navigate("/registeritem");
     };
+
+    const documentId =
+        "txaEirdO5wdhQpAjJ5xo8Rjp2b93_노트북 1_2024-02-02-22:49:53";
+    const docRef = doc(db, "sale", documentId);
+
+    getDoc(docRef)
+        .then((docSnap) => {
+            if (docSnap.exists()) {
+                console.log("Document data:", docSnap.data());
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        })
+        .catch((error) => {
+            console.error("Error getting document:", error);
+        });
 
     useEffect(() => {
         if (currentUser?.uid) {
