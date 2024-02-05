@@ -1,7 +1,17 @@
+import { useNavigate } from "react-router-dom";
+
 function Saleitem({ item }) {
+    const navigate = useNavigate();
+
+    const moveToDetail = () => {
+        navigate(`/itemdetail/${item.id}`);
+    };
     // console.log("이동", item);
     return (
-        <div className="flex flex-col w-48 h-72 justify-between cursor-pointer m-2 mt-10 rounded-md p-1 hover:shadow-custom">
+        <div
+            className="flex flex-col w-48 h-72 justify-between cursor-pointer m-2 mt-10 rounded-md p-1 hover:shadow-custom"
+            onClick={moveToDetail}
+        >
             <div className="border-solid border border-black rounded-md w-full h-44 overflow-hidden">
                 <img
                     src={item.firstImg}

@@ -12,10 +12,14 @@ import Home from "./pages/Home";
 import Layout from "./components/Layout";
 import RegisterItem from "./pages/RegisterItem";
 import Salemain from "./pages/Salemain";
+import Itemdetail from "./pages/Itemdetail";
+import ItemModify from "./pages/ItemModify";
 
 const ProtectedHome = withAuthProtection(Home);
 const ProtectedRegisterItem = withAuthProtection(RegisterItem);
 const ProtectedSalemain = withAuthProtection(Salemain);
+const ProtectedItemdetail = withAuthProtection(Itemdetail);
+const ProtectedItemModify = withAuthProtection(ItemModify);
 
 function App() {
     return (
@@ -44,6 +48,22 @@ function App() {
                     element={
                         <Layout>
                             <ProtectedSalemain />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/itemdetail/:itemId"
+                    element={
+                        <Layout>
+                            <ProtectedItemdetail />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/itemmodify/:itemId"
+                    element={
+                        <Layout>
+                            <ProtectedItemModify />
                         </Layout>
                     }
                 />

@@ -24,22 +24,22 @@ function Salemain() {
         navigate("/registeritem");
     };
 
-    const documentId =
-        "txaEirdO5wdhQpAjJ5xo8Rjp2b93_노트북 1_2024-02-02-22:49:53";
-    const docRef = doc(db, "sale", documentId);
+    // const documentId =
+    //     "txaEirdO5wdhQpAjJ5xo8Rjp2b93_노트북 1_2024-02-02-22:49:53";
+    // const docRef = doc(db, "sale", documentId);
 
-    getDoc(docRef)
-        .then((docSnap) => {
-            if (docSnap.exists()) {
-                console.log("Document data:", docSnap.data());
-            } else {
-                // doc.data() will be undefined in this case
-                console.log("No such document!");
-            }
-        })
-        .catch((error) => {
-            console.error("Error getting document:", error);
-        });
+    // getDoc(docRef)
+    //     .then((docSnap) => {
+    //         if (docSnap.exists()) {
+    //             console.log("Document data:", docSnap.data());
+    //         } else {
+    //             // doc.data() will be undefined in this case
+    //             console.log("No such document!");
+    //         }
+    //     })
+    //     .catch((error) => {
+    //         console.error("Error getting document:", error);
+    //     });
 
     useEffect(() => {
         if (currentUser?.uid) {

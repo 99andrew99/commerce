@@ -35,7 +35,7 @@ function Header() {
     };
 
     const { currentUser } = useAuth();
-    console.log("홈페이지", currentUser);
+    // console.log("홈페이지", currentUser);
 
     return (
         <div className=" w-screen h-28 border-b border-black">
