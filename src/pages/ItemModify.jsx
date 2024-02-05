@@ -222,7 +222,7 @@ function ItemModify() {
                 file: fileUrl.join(","),
                 uid: currentUser.uid,
                 createdAt: createdId,
-                id: `${currentUser.uid}_${data.name}_${currentTime}`,
+                id: `${currentUser.uid}_${data.name}_${createdId}`,
                 modified: serverTimestamp(),
             }
         );
