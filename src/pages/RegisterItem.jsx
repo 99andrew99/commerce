@@ -91,7 +91,6 @@ function RegisterItem() {
         navigate(-1);
     };
 
-    const [selectedFiles, setSelectedFiles] = useState();
     const [fileUrl, setFileUrl] = useState([]);
     const [categoryValue, setCategoryValue] = useState("식품");
 
@@ -322,8 +321,8 @@ function RegisterItem() {
                                             </CarouselItem>
                                         ))}
                                     </CarouselContent>
-                                    <CarouselPrevious />
-                                    <CarouselNext />
+                                    <CarouselPrevious type="button" />
+                                    <CarouselNext type="button" />
                                 </Carousel>
                                 <FormControl>
                                     <Input

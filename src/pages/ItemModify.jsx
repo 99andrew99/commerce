@@ -7,6 +7,7 @@ import {
     getDocs,
     orderBy,
     updateDoc,
+    setDoc,
     doc,
     getDoc,
     serverTimestamp,
@@ -76,21 +77,61 @@ function ItemModify() {
     const [firstLoading, setFirstLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isAlertOpen, setIsAlertOpen] = useState(false);
-
+    const [fileUrl, setFileUrl] = useState([]);
     const navigate = useNavigate();
     const { currentUser } = useAuth();
     const [existingFileUrls, setExistingFileUrls] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState();
     const [categoryValue, setCategoryValue] = useState("식품");
-    const handleFileChange = (event) => {
-        setSelectedFiles(event.target.files);
-        // form.setValue("file", event.target.files);
+    const [createdId, setCreateId] = useState("");
+    // const handleFileChange = (event) => {
+    //     setSelectedFiles(event.target.files);
+    //     // form.setValue("file", event.target.files);
+    // };
+
+    const handleConfirm = () => {
+        // alert 창 닫고 로그인 창 이동
+        setIsAlertOpen(false);
+        navigate(-1);
     };
 
     const handleCategoryChange = (value) => {
         // form.setValue("category", value);
         setCategoryValue(value);
     };
+
+    const handleFileChange = async (event) => {
+        const files = event.target.files;
+        if (files.length === 0) return; // 파일이 선택되지 않았다면 함수 종료
+
+        // 기존 파일을 Storage에서 삭제
+        for (let url of fileUrl) {
+            const fileRef = ref(storage, url);
+            deleteObject(fileRef).catch((error) => {
+                console.error("파일 삭제 중 에러 발생:", error);
+            });
+            console.log("파일 삭제됨");
+        }
+
+        // 새 파일 업로드
+        const uploadedUrls = [];
+        setIsLoading(true); // 로딩 상태 활성화
+        for (let file of files) {
+            const currentTime = currentTimeFunc();
+            const imageRef = ref(storage, `images/${file.name}_${currentTime}`);
+            try {
+                await uploadBytes(imageRef, file); // 파일 업로드
+                const downloadUrl = await getDownloadURL(imageRef); // 업로드된 파일의 URL 가져오기
+                uploadedUrls.push(downloadUrl);
+            } catch (error) {
+                console.error("업로드 중 에러 발생:", error);
+            }
+        }
+
+        setFileUrl(uploadedUrls); // 업로드된 파일 URL 상태 업데이트
+        setIsLoading(false); // 로딩 상태 비활성화
+    };
+
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -115,8 +156,17 @@ function ItemModify() {
                     form.setValue("cost", docSnap.data().cost);
                     form.setValue("stock", docSnap.data().stock);
                     form.setValue("description", docSnap.data().description);
+                    setFileUrl(docSnap.data().file.split(","));
+
+                    setCreateId(
+                        docSnap
+                            .data()
+                            .id.substring(docSnap.data().id.length - 19)
+                    );
                     // form.setValue(docSnap.data().file.split(","));
+
                     console.log("아이템 수정 페이지 정상동작");
+
                     setFirstLoading(true);
                 } else {
                     console.log("아이템 수정 페이지 getDoc 상품 존재 에러");
@@ -151,7 +201,35 @@ function ItemModify() {
         return formattedDateTime;
     };
 
-    const onSubmit = () => {};
+    const onSubmit = async (data) => {
+        // console.log("데이터는:", data);
+        // console.log(selectedFiles);
+        if (fileUrl == null) {
+            alert("사진을 등록해주세요.");
+            return;
+        }
+        console.log("tttttttt");
+        setIsLoading(true);
+        const currentTime = currentTimeFunc();
+        setDoc(
+            doc(db, "sale", `${currentUser.uid}_${data.name}_${createdId}`),
+            {
+                category: categoryValue,
+                name: data.name,
+                cost: data.cost,
+                stock: data.stock,
+                description: data.description,
+                file: fileUrl.join(","),
+                uid: currentUser.uid,
+                createdAt: createdId,
+                id: `${currentUser.uid}_${data.name}_${currentTime}`,
+                modified: serverTimestamp(),
+            }
+        );
+
+        setIsLoading(false);
+        setIsAlertOpen(true);
+    };
 
     return (
         firstLoading && (
@@ -296,10 +374,20 @@ function ItemModify() {
                                         가능)
                                     </FormLabel>
 
-                                    <Carousel className="w-28 h-32 ml-auto mr-auto">
-                                        <CarouselContent></CarouselContent>
-                                        <CarouselPrevious />
-                                        <CarouselNext />
+                                    <Carousel className="w-28 h-32 ml-auto mr-auto ">
+                                        <CarouselContent>
+                                            {fileUrl.map((url, index) => (
+                                                <CarouselItem>
+                                                    <img
+                                                        key={index}
+                                                        src={url}
+                                                        className="w-28 h-32 border border-black"
+                                                    />
+                                                </CarouselItem>
+                                            ))}
+                                        </CarouselContent>
+                                        <CarouselPrevious type="button" />
+                                        <CarouselNext type="button" />
                                     </Carousel>
                                     <FormControl>
                                         <Input
