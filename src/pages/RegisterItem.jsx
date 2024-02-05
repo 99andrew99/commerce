@@ -10,6 +10,14 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel";
+
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -23,7 +31,12 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+    getDownloadURL,
+    ref,
+    uploadBytes,
+    deleteObject,
+} from "firebase/storage";
 import { storage } from "@/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -54,7 +67,7 @@ function RegisterItem() {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { currentUser } = useAuth();
-    console.log("레지스터 유저: ", currentUser);
+    // console.log("레지스터 유저: ", currentUser);
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -78,13 +91,39 @@ function RegisterItem() {
         navigate(-1);
     };
 
-    const [selectedFiles, setSelectedFiles] = useState();
     const [fileUrl, setFileUrl] = useState([]);
     const [categoryValue, setCategoryValue] = useState("식품");
 
-    const handleFileChange = (event) => {
-        setSelectedFiles(event.target.files);
-        // form.setValue("file", event.target.files);
+    const handleFileChange = async (event) => {
+        const files = event.target.files;
+        if (files.length === 0) return; // 파일이 선택되지 않았다면 함수 종료
+
+        // 기존 파일을 Storage에서 삭제
+        for (let url of fileUrl) {
+            const fileRef = ref(storage, url);
+            deleteObject(fileRef).catch((error) => {
+                console.error("파일 삭제 중 에러 발생:", error);
+            });
+            console.log("파일 삭제됨");
+        }
+
+        // 새 파일 업로드
+        const uploadedUrls = [];
+        setIsLoading(true); // 로딩 상태 활성화
+        for (let file of files) {
+            const currentTime = currentTimeFunc();
+            const imageRef = ref(storage, `images/${file.name}_${currentTime}`);
+            try {
+                await uploadBytes(imageRef, file); // 파일 업로드
+                const downloadUrl = await getDownloadURL(imageRef); // 업로드된 파일의 URL 가져오기
+                uploadedUrls.push(downloadUrl);
+            } catch (error) {
+                console.error("업로드 중 에러 발생:", error);
+            }
+        }
+
+        setFileUrl(uploadedUrls); // 업로드된 파일 URL 상태 업데이트
+        setIsLoading(false); // 로딩 상태 비활성화
     };
 
     const handleCategoryChange = (value) => {
@@ -112,35 +151,12 @@ function RegisterItem() {
     const onSubmit = async (data) => {
         // console.log("데이터는:", data);
         // console.log(selectedFiles);
-        if (selectedFiles == null) {
+        if (fileUrl == null) {
             alert("사진을 등록해주세요.");
             return;
         }
         setIsLoading(true);
-        let tempArr = [];
-        let currentTime = currentTimeFunc();
-        // console.log("현재 시간: ", currentTime);
-
-        for (let i = 0; i < selectedFiles.length; i++) {
-            const imageRef = ref(
-                storage,
-                `images/${selectedFiles[i].name}_${currentTime}`
-            );
-            // console.log("imageRef : ", imageRef);
-            await uploadBytes(imageRef, selectedFiles[i]);
-
-            const downloadUrl = await getDownloadURL(imageRef);
-            console.log("다운로드URL:", downloadUrl);
-            tempArr.push(downloadUrl);
-        }
-
-        setFileUrl(tempArr);
-        console.log("파일 url", tempArr);
-
-        // for (let i = 0; i < fileUrl.length; i++) {
-        //     console.log(`${i + 1} 번째 파일 주소는: `, fileUrl[i]);
-        // }
-
+        const currentTime = currentTimeFunc();
         setDoc(
             doc(db, "sale", `${currentUser.uid}_${data.name}_${currentTime}`),
             {
@@ -149,9 +165,10 @@ function RegisterItem() {
                 cost: data.cost,
                 stock: data.stock,
                 description: data.description,
-                file: tempArr.join(","),
+                file: fileUrl.join(","),
                 uid: currentUser.uid,
                 createdAt: serverTimestamp(),
+                id: `${currentUser.uid}_${data.name}_${currentTime}`,
             }
         );
 
@@ -292,6 +309,21 @@ function RegisterItem() {
                                 <FormLabel>
                                     대표 상품 이미지를 선택하세요. (여러장 가능)
                                 </FormLabel>
+                                <Carousel className="w-28 h-32 ml-auto mr-auto ">
+                                    <CarouselContent>
+                                        {fileUrl.map((url, index) => (
+                                            <CarouselItem>
+                                                <img
+                                                    key={index}
+                                                    src={url}
+                                                    className="w-28 h-32 border border-black"
+                                                />
+                                            </CarouselItem>
+                                        ))}
+                                    </CarouselContent>
+                                    <CarouselPrevious type="button" />
+                                    <CarouselNext type="button" />
+                                </Carousel>
                                 <FormControl>
                                     <Input
                                         type="file"
